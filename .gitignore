@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated signals / artifacts
+/data/signals/generated/
+/artifacts/
+/artifacts_herbert_signal_first_run/
+/plays/generated/
+/dashboards/*.csv
+/research/Catalyst_Calendar_enriched.md
+
+# Editor
+.vscode/
+.idea/

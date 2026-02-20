@@ -1,0 +1,21 @@
+{
+  "channel": "Brighter with Herbert",
+  "items": [
+    {
+      "id": "yt-001",
+      "published": "2026-02-10T18:00:00Z",
+      "title": "Grok Voice in Cars? What It Could Mean for Tesla",
+      "url": "https://www.youtube.com/watch?v=dummy1",
+      "summary": "Discussion on Grok Voice integrations and implications for in-car assistants.",
+      "tags": ["Grok", "Tesla", "Voice", "Assistant"]
+    },
+    {
+      "id": "yt-002",
+      "published": "2026-02-05T18:00:00Z",
+      "title": "Tesla Energy Deployment Records and What Comes Next",
+      "url": "https://www.youtube.com/watch?v=dummy2",
+      "summary": "Breakdown of recent energy GWh deployments and margin outlook.",
+      "tags": ["Energy", "Megapack", "Deployments"]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+name: HERBERT-SIGNAL Integration (E2E)
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_site:
+        description: 'Run site adapter (requires HERBERT_SITE_URL secret)'
+        required: false
+        default: 'false'
+      run_yt:
+        description: 'Run YouTube adapter (requires YOUTUBE_API_KEY + HERBERT_YT_CHANNEL_ID)'
+        required: false
+        default: 'false'
+
+jobs:
+  e2e:
+    name: Run integration E2E (sandbox)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install test deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest requests beautifulsoup4
+
+      - name: Validate requested inputs & required secrets
+        shell: bash
+        run: |
+          echo "Inputs: run_site=${{ inputs.run_site }}, run_yt=${{ inputs.run_yt }}"
+          missing=false
+          if [ "${{ inputs.run_site }}" = "true" ]; then
+            if [ -z "${{ secrets.HERBERT_SITE_URL }}" ]; then
+              echo "ERROR: HERBERT_SITE_URL secret is not set." >&2
+              missing=true
+            fi
+          fi
+          if [ "${{ inputs.run_yt }}" = "true" ]; then
+            if [ -z "${{ secrets.YOUTUBE_API_KEY }}" ] || [ -z "${{ secrets.HERBERT_YT_CHANNEL_ID }}" ]; then
+              echo "ERROR: YOUTUBE_API_KEY or HERBERT_YT_CHANNEL_ID secrets missing." >&2
+              missing=true
+            fi
+          fi
+          if [ "$missing" = true ]; then
+            echo "Required secrets missing — aborting." >&2
+            exit 1
+          fi
+
+      - name: Run integration tests (marker: integration)
+        env:
+          HERBERT_SITE_URL: ${{ secrets.HERBERT_SITE_URL }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          HERBERT_YT_CHANNEL_ID: ${{ secrets.HERBERT_YT_CHANNEL_ID }}
+        run: |
+          pytest -q -m integration tests/integration
