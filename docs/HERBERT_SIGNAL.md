@@ -7,8 +7,11 @@ Purpose: Ingest **public** Herbert Ong content (herbertong.com, “Brighter with
 - They are **skipped automatically** unless the required environment variables are set.
 
 Required (choose as needed):
-- `YOUTUBE_API_KEY` + `HERBERT_YT_CHANNEL_ID` — run YouTube E2E tests
+- `YOUTUBE_API_KEY` + `HERBERT_YT_CHANNEL_ID` — run YouTube E2E tests (adapter may call `videos.list` to enrich results)
 - `HERBERT_SITE_URL` — run site E2E tests
+
+Adapter enrichment:
+- `adapter_yt` optionally calls `videos.list` to obtain `tags`, `contentDetails.duration`, and `statistics.viewCount`. This increases API quota usage; set `enrich=False` to avoid extra calls.
 
 Run locally:
 
