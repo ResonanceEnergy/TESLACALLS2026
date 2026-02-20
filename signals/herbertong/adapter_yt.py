@@ -11,7 +11,8 @@ Notes:
 """
 from typing import Dict, Any, List, Optional
 import os
-import requests
+
+from .utils import http_get, quota_tracker
 
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 YOUTUBE_VIDEOS_URL = "https://www.googleapis.com/youtube/v3/videos"
@@ -53,8 +54,8 @@ def fetch(channel_id: Optional[str] = None, api_key: Optional[str] = None, max_r
         if page_token:
             params['pageToken'] = page_token
 
-        resp = requests.get(YOUTUBE_SEARCH_URL, params=params, timeout=10)
-        resp.raise_for_status()
+        quota_tracker.record('search.list')
+        resp = http_get(YOUTUBE_SEARCH_URL, params=params, timeout=10)
         data = resp.json()
 
         for it in data.get('items', []):
@@ -90,8 +91,8 @@ def fetch(channel_id: Optional[str] = None, api_key: Optional[str] = None, max_r
                 'id': ','.join(chunk),
                 'key': api_key,
             }
-            v_resp = requests.get(YOUTUBE_VIDEOS_URL, params=v_params, timeout=10)
-            v_resp.raise_for_status()
+            quota_tracker.record('videos.list')
+            v_resp = http_get(YOUTUBE_VIDEOS_URL, params=v_params, timeout=10)
             vdata = v_resp.json()
             for v in vdata.get('items', []):
                 vid_map[v.get('id')] = v

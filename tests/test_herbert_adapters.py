@@ -3,6 +3,8 @@ import os
 from unittest import mock
 
 import pytest
+import requests
+from signals.herbertong import utils
 
 from signals.herbertong import ingest_yt, ingest_site
 from signals.herbertong import adapter_site, adapter_yt
@@ -44,7 +46,7 @@ def test_parse_feed_from_sample_json(tmp_path):
     assert all('id' in e and e['source'].startswith('herbertong') for e in events)
 
 
-@mock.patch('signals.herbertong.adapter_yt.requests.get')
+@mock.patch('signals.herbertong.utils.requests.get')
 def test_adapter_yt_fetch_and_parse(mock_get, tmp_path):
     # mock requests response for search.list then videos.list
     mock_search = mock.Mock()
@@ -98,3 +100,34 @@ def test_adapter_site_fetch_and_ingest(mock_get, tmp_path):
     events = ingest_site._parse_html_string(SAMPLE_HTML, str(out))
     assert len(events) == 1
     assert events[0]['thesis_tag'] == 'TSLA_MILESTONE'
+
+
+@mock.patch('signals.herbertong.utils.requests.get')
+def test_adapter_yt_retry_and_quota(mock_get, tmp_path, monkeypatch):
+    """Ensure transient search failures are retried and quota is recorded."""
+    # reset tracker
+    utils.quota_tracker.reset()
+
+    # first search attempt -> raise HTTPError, second -> success, third -> videos.list success
+    mock_search_fail = mock.Mock()
+    mock_search_fail.raise_for_status.side_effect = requests.exceptions.HTTPError()
+
+    mock_search_ok = mock.Mock()
+    mock_search_ok.raise_for_status.return_value = None
+    mock_search_ok.json.return_value = SAMPLE_YT_API_RESPONSE
+
+    mock_videos_ok = mock.Mock()
+    mock_videos_ok.raise_for_status.return_value = None
+    mock_videos_ok.json.return_value = SAMPLE_YT_VIDEOS_RESPONSE
+
+    mock_get.side_effect = [mock_search_fail, mock_search_ok, mock_videos_ok]
+
+    # avoid real sleeping in tests
+    monkeypatch.setattr('time.sleep', lambda s: None)
+
+    feed = adapter_yt.fetch(channel_id='chan', api_key='key', max_results=1, enrich=True)
+    assert 'items' in feed and len(feed['items']) == 1
+
+    counts = utils.quota_tracker.get_counts()
+    assert counts.get('search.list', 0) >= 1
+    assert counts.get('videos.list', 0) == 1
