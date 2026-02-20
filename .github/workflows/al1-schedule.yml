@@ -1,0 +1,24 @@
+name: AL1-schedule
+on:
+  schedule:
+    - cron: "30 5 * * 1-5"
+  workflow_dispatch:
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: AL-1 Dry-run
+        run: |
+          python ops/pipelines/al1_pipeline.py || true
+      - name: Upload AL-1 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: al1-outputs
+          path: |
+            plays/generated/**
+            dashboards/al1_kpis.csv
+            governance/ChangeLog_AL1.md
