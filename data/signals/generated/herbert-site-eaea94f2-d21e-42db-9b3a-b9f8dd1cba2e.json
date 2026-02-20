@@ -1,0 +1,18 @@
+{
+  "id": "herbert-site-eaea94f2-d21e-42db-9b3a-b9f8dd1cba2e",
+  "timestamp": "2026-01-28T00:00:00Z",
+  "source": "herbertong:site",
+  "features": {
+    "title": "Q4 2025 Results posted; energy deployments hit records",
+    "url": "https://www.herbertong.com/",
+    "keywords": [
+      "milestone"
+    ],
+    "sentiment": "neu"
+  },
+  "expected_move_bp": 40,
+  "iv30": null,
+  "iv90": null,
+  "skew_note": "",
+  "thesis_tag": "TSLA_MILESTONE"
+}

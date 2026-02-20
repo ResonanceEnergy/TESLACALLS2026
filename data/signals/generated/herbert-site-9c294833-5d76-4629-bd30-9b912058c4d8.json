@@ -1,0 +1,18 @@
+{
+  "id": "herbert-site-9c294833-5d76-4629-bd30-9b912058c4d8",
+  "timestamp": "2026-02-15T00:00:00Z",
+  "source": "herbertong:site",
+  "features": {
+    "title": "Interview: autonomy roadmap highlights",
+    "url": "https://www.herbertong.com/",
+    "keywords": [
+      "milestone"
+    ],
+    "sentiment": "neu"
+  },
+  "expected_move_bp": 40,
+  "iv30": null,
+  "iv90": null,
+  "skew_note": "",
+  "thesis_tag": "AUTONOMY_SIGNAL"
+}
